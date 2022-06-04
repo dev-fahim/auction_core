@@ -19,7 +19,7 @@ jobs:
           script: |
             cd ~/uni/auction_core
             git pull
-            docker compose f "docker-compose_stage.yml" up -d --build
+            docker compose -f "docker-compose_stage.yml" up -d --build
             docker compose ps
             docker compose exec -T web_stage python3 manage.py makemigrations
             docker compose exec -T web_stage python3 manage.py migrate
