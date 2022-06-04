@@ -2,7 +2,7 @@
 FROM python:3
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-RUN pip install pipenv
+RUN pip install --upgarde pip
 WORKDIR /code
 COPY . .
-RUN pipenv install
+RUN pip install -r requirements.txt
