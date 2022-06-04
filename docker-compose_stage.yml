@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+
+  db_stage:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=djangoDB
+      - POSTGRES_USER=djangoUSER
+      - POSTGRES_PASSWORD=djangoPASS
+
+  web_stage:
+    build: .
+    command: gunicorn --bind 0.0.0.0:8888 auction_core.wsgi
+    volumes:
+      - .:/code
+    ports:
+      - "8888:8888"
+    env_file:
+      - .env
+    depends_on:
+      - db_stage
+
+volumes:
+  postgres_data:
