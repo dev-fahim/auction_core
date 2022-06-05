@@ -9,6 +9,7 @@ dj-database-url = "*"
 gunicorn = "*"
 whitenoise = "*"
 psycopg2-binary = "*"
+django-model-utils = "*"
 
 [dev-packages]
 

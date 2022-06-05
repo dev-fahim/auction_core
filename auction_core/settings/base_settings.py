@@ -15,7 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 import dj_database_url
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,18 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', None)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
-
-TAG = os.environ.get('TAG', None)
-ENV = os.environ.get('ENV', 'dev')
-
-if ENV == 'staging':
-    ALLOWED_HOSTS = [f'{TAG}.{ALLOWED_HOSTS[0]}']
-elif ENV == 'production':
-    ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
-    DEBUG = False
-else:
-    ALLOWED_HOSTS = []
+ALLOWED_HOSTS = []
 
 # Application definition
 
