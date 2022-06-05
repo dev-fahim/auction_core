@@ -9,7 +9,7 @@ class BaseAdmin(admin.ModelAdmin):
 
 
 class BaseVerifiedAdmin(BaseAdmin):
-    readonly_fields = BaseAdmin.readonly_fields + ['is_verified', 'verified_by', 'verification_timestamp', ]
+    readonly_fields = BaseAdmin.readonly_fields + ['is_verified', 'verification_timestamp', ]
 
 
 class BaseCreatedAdmin(BaseAdmin):

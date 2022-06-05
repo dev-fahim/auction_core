@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 from core.models import BaseModel, VerificationModel
+from user_profile.enums import UserTypeEnum
 
 
 class Profile(VerificationModel, BaseModel):
@@ -9,15 +10,11 @@ class Profile(VerificationModel, BaseModel):
 
     verification_related_name = 'profiles_verified'
 
-    USER_TYPE_ATTN = 'ATTN'
-    USER_TYPE_ADMIN = 'ADMIN'
-    USER_TYPE_BUYER = 'BUYER'
-    USER_TYPE_SELLER = 'SELLER'
     USER_TYPE_CHOICES = (
-        (USER_TYPE_ATTN, USER_TYPE_ATTN),
-        (USER_TYPE_ADMIN, USER_TYPE_ADMIN),
-        (USER_TYPE_BUYER, USER_TYPE_BUYER),
-        (USER_TYPE_SELLER, USER_TYPE_SELLER),
+        (UserTypeEnum.USER_TYPE_ATTN, UserTypeEnum.USER_TYPE_ATTN),
+        (UserTypeEnum.USER_TYPE_ADMIN, UserTypeEnum.USER_TYPE_ADMIN),
+        (UserTypeEnum.USER_TYPE_BUYER, UserTypeEnum.USER_TYPE_BUYER),
+        (UserTypeEnum.USER_TYPE_SELLER, UserTypeEnum.USER_TYPE_SELLER),
     )
 
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE, null=True, related_name='profile')

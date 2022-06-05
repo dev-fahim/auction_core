@@ -10,6 +10,8 @@ gunicorn = "*"
 whitenoise = "*"
 psycopg2-binary = "*"
 django-model-utils = "*"
+django-ninja = "*"
+pydantic = "*"
 
 [dev-packages]
 
