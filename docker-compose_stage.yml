@@ -5,7 +5,7 @@ services:
   db_stage:
     image: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - uni_auction_stage_postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=djangoDB
       - POSTGRES_USER=djangoUSER
@@ -19,9 +19,9 @@ services:
     ports:
       - "8888:8888"
     env_file:
-      - .env
+      - .stage.env
     depends_on:
       - db_stage
 
 volumes:
-  postgres_data:
+  uni_auction_stage_postgres_data:
