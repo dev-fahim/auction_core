@@ -21,7 +21,7 @@ jobs:
             git pull origin ${{ github.ref_name }}
             echo ${{ github.sha }}
             git checkout ${{ github.sha }}
-            TAG=${{ github.sha }} docker compose -f "docker-compose_stage.yml" up -d --build
+            TAG=${{ github.sha }} docker compose -f "docker-compose_stage.yml" up -d --build --remove-orphans
             docker compose -f "docker-compose_stage.yml" ps
             docker compose -f "docker-compose_stage.yml" exec -T web_stage python3 manage.py makemigrations
             docker compose -f "docker-compose_stage.yml" exec -T web_stage python3 manage.py migrate
