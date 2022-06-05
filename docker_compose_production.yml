@@ -2,29 +2,29 @@ version: "3.9"
 
 services:
 
-  db_stage:
+  db_production:
     image: postgres
     volumes:
-      - uni_auction_stage_postgres_data:/var/lib/postgresql/data
+      - uni_auction_production_postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=djangoDB
       - POSTGRES_USER=djangoUSER
       - POSTGRES_PASSWORD=djangoPASS
 
-  web_stage:
+  web_production:
     build: .
-    command: gunicorn --bind 0.0.0.0:8888 auction_core.wsgi
+    command: gunicorn --bind 0.0.0.0:8889 auction_core.wsgi
     volumes:
       - .:/code
     ports:
-      - "8888:8888"
+      - "8889:8889"
     env_file:
-      - .stage.env
+      - .prod.env
     environment:
       - TAG=${TAG}
-      - ENV=staging
+      - ENV=production
     depends_on:
-      - db_stage
+      - db_production
 
 volumes:
-  uni_auction_stage_postgres_data:
+  uni_auction_production_postgres_data:

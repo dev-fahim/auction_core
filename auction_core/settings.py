@@ -30,9 +30,13 @@ DEBUG = True
 ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 
 TAG = os.environ.get('TAG', None)
+ENV = os.environ.get('ENV', 'dev')
 
-if TAG != 'local':
+if ENV == 'staging':
     ALLOWED_HOSTS = [f'{TAG}.{ALLOWED_HOSTS[0]}']
+elif ENV == 'production':
+    ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
+    DEBUG = False
 else:
     ALLOWED_HOSTS = []
 
