@@ -20,6 +20,8 @@ services:
       - "8888:8888"
     env_file:
       - .stage.env
+    environment:
+      - TAG=${TAG}
     depends_on:
       - db_stage
 

@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 TAG = os.environ.get('TAG', None)
 
 if TAG != 'local':
-    ALLOWED_HOSTS = [f'{TAG}-{ALLOWED_HOSTS[0]}']
+    ALLOWED_HOSTS = [f'{TAG}.{ALLOWED_HOSTS[0]}']
 else:
     ALLOWED_HOSTS = []
 
