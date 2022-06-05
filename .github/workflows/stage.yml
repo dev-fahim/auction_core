@@ -19,6 +19,7 @@ jobs:
           script: |
             cd ~/uni/auction_core
             git pull
+            echo $GITHUB_HASH
             TAG=$GITHUB_HASH docker compose -f "docker-compose_stage.yml" up -d --build
             docker compose -f "docker-compose_stage.yml" ps
             docker compose -f "docker-compose_stage.yml" exec -T web_stage python3 manage.py makemigrations
