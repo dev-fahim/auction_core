@@ -23,7 +23,6 @@ jobs:
             git checkout ${{ github.sha }}
             TAG=${{ github.sha }} docker compose -f "docker_compose_production.yml" up -d --build
             docker compose -f "docker_compose_production.yml" ps
-            docker compose -f "docker_compose_production.yml" exec -T web_production python3 manage.py makemigrations
             docker compose -f "docker_compose_production.yml" exec -T web_production python3 manage.py migrate
             docker compose -f "docker_compose_production.yml" exec -T web_production python3 manage.py collectstatic --no-input
             docker compose -f "docker_compose_production.yml" exec -T web_production python3 manage.py test
