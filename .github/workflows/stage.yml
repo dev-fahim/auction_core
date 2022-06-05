@@ -20,6 +20,7 @@ jobs:
             cd ~/uni/auction_core
             git pull
             echo ${{ github.sha }}
+            git checkout ${{ github.sha }}
             TAG=${{ github.sha }} docker compose -f "docker-compose_stage.yml" up -d --build
             docker compose -f "docker-compose_stage.yml" ps
             docker compose -f "docker-compose_stage.yml" exec -T web_stage python3 manage.py makemigrations
