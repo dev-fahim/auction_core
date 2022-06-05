@@ -6,7 +6,7 @@ on:
       - production
 
 jobs:
-  deploy:
+  production_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Deploying to Cloud [Production]
