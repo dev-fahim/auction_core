@@ -25,3 +25,4 @@ jobs:
             docker compose -f "docker-compose_stage.yml" exec -T web_stage python3 manage.py makemigrations
             docker compose -f "docker-compose_stage.yml" exec -T web_stage python3 manage.py migrate
             docker compose -f "docker-compose_stage.yml" exec -T web_stage python3 manage.py collectstatic --no-input
+            docker compose -f "docker-compose_stage.yml" exec -T web_stage python3 manage.py test

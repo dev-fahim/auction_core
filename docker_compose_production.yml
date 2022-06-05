@@ -1,5 +1,5 @@
 version: "3.9"
-
+-
 services:
 
   db_production:
@@ -13,11 +13,11 @@ services:
 
   web_production:
     build: .
-    command: gunicorn --bind 0.0.0.0:8889 auction_core.wsgi
+    command: gunicorn --bind 0.0.0.0:8888 auction_core.wsgi
     volumes:
       - .:/code
     ports:
-      - "8889:8889"
+      - "8889:8888"
     env_file:
       - .prod.env
     environment:
