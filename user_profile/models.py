@@ -10,15 +10,8 @@ class Profile(VerificationModel, BaseModel):
 
     verification_related_name = 'profiles_verified'
 
-    USER_TYPE_CHOICES = (
-        (UserTypeEnum.USER_TYPE_ATTN, UserTypeEnum.USER_TYPE_ATTN),
-        (UserTypeEnum.USER_TYPE_ADMIN, UserTypeEnum.USER_TYPE_ADMIN),
-        (UserTypeEnum.USER_TYPE_BUYER, UserTypeEnum.USER_TYPE_BUYER),
-        (UserTypeEnum.USER_TYPE_SELLER, UserTypeEnum.USER_TYPE_SELLER),
-    )
-
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE, null=True, related_name='profile')
-    user_type = models.CharField(max_length=100, choices=USER_TYPE_CHOICES)
+    user_type = models.CharField(max_length=100, choices=UserTypeEnum.choices)
 
 
 class Credit(BaseModel):

@@ -1,20 +1,57 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 
-# Register your models here.
-from core.admin import BaseVerifiedAdmin, BaseAdmin
-from user_profile.models import Profile, Credit, CreditTransaction
+from .models import Profile, Credit, CreditTransaction
 
 
 @admin.register(Profile)
-class ProfileAdmin(BaseVerifiedAdmin):
-    pass
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'guid',
+        'created',
+        'updated',
+        'is_active',
+        'verified_by',
+        'verification_timestamp',
+        'user',
+        'user_type',
+    )
+    list_filter = (
+        'created',
+        'updated',
+        'is_active',
+        'verified_by',
+        'verification_timestamp',
+        'user',
+    )
 
 
 @admin.register(Credit)
-class CreditAdmin(BaseAdmin):
-    pass
+class CreditAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'guid',
+        'created',
+        'updated',
+        'is_active',
+        'user',
+        'balance',
+        'expiry',
+    )
+    list_filter = ('created', 'updated', 'is_active', 'user', 'expiry')
 
 
 @admin.register(CreditTransaction)
-class CreditTransactionAdmin(BaseAdmin):
-    pass
+class CreditTransactionAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'guid',
+        'created',
+        'updated',
+        'is_active',
+        'credit',
+        'amount',
+        'type',
+    )
+    list_filter = ('created', 'updated', 'is_active', 'credit')

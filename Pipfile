@@ -12,6 +12,7 @@ psycopg2-binary = "*"
 django-model-utils = "*"
 django-ninja = "*"
 pydantic = "*"
+django-extensions = "*"
 
 [dev-packages]
 

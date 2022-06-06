@@ -1,8 +1,8 @@
-import enum
+from django.db.models import TextChoices
 
 
-class UserTypeEnum(str, enum.Enum):
-    USER_TYPE_ATTN = 'ATTN'
-    USER_TYPE_ADMIN = 'ADMIN'
-    USER_TYPE_BUYER = 'BUYER'
-    USER_TYPE_SELLER = 'SELLER'
+class UserTypeEnum(TextChoices):
+    ATTN = 'ATTN'
+    ADMIN = 'ADMIN'
+    BUYER = 'BUYER'
+    SELLER = 'SELLER'
