@@ -10,6 +10,6 @@ router = Router()
 
 @router.get('/all', tags=['User Profile'], response=ProfileListSchema)
 def get_profiles(request, page_number: int = 1):
-    profiles = Profile.objects.select_related('user', 'verified_by').all()
+    profiles = Profile.objects.select_related('user', 'verified_by').order_by('-id')
 
     return page_builder(profiles, 10, page_number)

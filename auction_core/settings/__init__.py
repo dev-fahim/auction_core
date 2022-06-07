@@ -2,6 +2,7 @@ from .base_settings import *
 from .deployment_settings import *
 from .package_apps_settings import *
 from .project_apps_settings import *
+from .debug_settings import *
 
 if ENV == 'staging':
     from .environments.staging import *

@@ -13,6 +13,7 @@ django-model-utils = "*"
 django-ninja = "*"
 pydantic = "*"
 django-extensions = "*"
+django-debug-toolbar = "*"
 
 [dev-packages]
 
