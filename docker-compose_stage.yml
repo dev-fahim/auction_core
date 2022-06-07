@@ -13,8 +13,8 @@ services:
 
   web_stage:
     build: .
-    entrypoint:
-      - ./entrypoint-server.sh
+    command:
+      - gunicorn --bind 0.0.0.0:8888 auction_core.wsgi
     image: "uni_auction_stage_${TAG}"
     volumes:
       - .:/code

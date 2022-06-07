@@ -13,8 +13,8 @@ services:
 
   web:
     build: .
-    entrypoint:
-      - ./entrypoint.sh
+    command:
+      - python manage.py runserver 0.0.0.0:8000
     image: "uni_auction_${TAG}"
     volumes:
       - .:/code

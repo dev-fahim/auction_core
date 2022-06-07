@@ -44,3 +44,8 @@ class CreatedByUserModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class ApiKey(BaseModel):
+    service_name = models.CharField(max_length=100)
+    secret = models.CharField(max_length=32, default=generate_guid, db_index=True)

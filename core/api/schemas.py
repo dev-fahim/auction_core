@@ -1,7 +1,12 @@
 import datetime
+import enum
 import typing
 
 from ninja import Schema
+
+
+class ErrorCodes(int, enum.Enum):
+    NOT_FOUND = 101
 
 
 class BaseSchema(Schema):
@@ -42,3 +47,16 @@ class PaginationBuilderSchema(Schema):
     previous_page: int = None
     total_pages: int
     data: typing.List[typing.Any]
+
+
+class ErrorSchema(Schema):
+    error: str
+    code: ErrorCodes
+
+
+class SuccessSchema(Schema):
+    success: str
+
+
+class MsgSchema(Schema):
+    msg: str
