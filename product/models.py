@@ -30,3 +30,7 @@ class Product(VerificationModel, BaseModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def is_updatable(self):
+        return self.is_verified is False

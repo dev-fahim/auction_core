@@ -5,7 +5,8 @@ from django.db.utils import DatabaseError
 from ninja import Router
 
 from api.auth import JWTAuth, ApiKeyAuth
-from core.api.schemas import ErrorSchema, ErrorCodes, MsgSchema
+from core.api.errors import OperationalError, UpdateError, CredentialError
+from core.api.schemas import ErrorSchema, MsgSchema
 from core.utils.auth import generate_token
 from core.utils.builders import page_builder
 from core.utils.validators import is_valid_email
@@ -24,12 +25,12 @@ router = Router(auth=[JWTAuth()])
 #     return page_builder(profiles, 10, page_number)
 
 
-@router.get('/get', tags=['User Profiles'], response={200: ProfileSchema, 404: ErrorSchema})
+@router.get('/get', tags=['User Profiles'], response=ProfileSchema)
 def get_profile_object(request):
     return request.user.profile
 
 
-@router.put('/update', tags=['User Profiles'], response={200: ProfileSchema, 400: ErrorSchema, 404: ErrorSchema})
+@router.put('/update', tags=['User Profiles'], response={200: ProfileSchema, 422: ErrorSchema})
 def update_profile_object(request, data: ProfileUpdateSchema):
     if is_valid_email(data.email):
         try:
@@ -44,11 +45,7 @@ def update_profile_object(request, data: ProfileUpdateSchema):
         except DatabaseError:
             pass
 
-    return router.api.create_response(request,
-                                      data=ErrorSchema(
-                                          error="error_while_saving_user",
-                                          code=ErrorCodes.USER_UPDATE_ERROR),
-                                      status=404)
+    raise UpdateError()
 
 
 @router.post('/auth/check-email', auth=[ApiKeyAuth(), JWTAuth()], tags=['Authentication'], response=MsgSchema)
@@ -65,7 +62,7 @@ def check_email(request, data: CheckEmailSchema):
 
 @router.post('/auth/sign-in', auth=[ApiKeyAuth()], tags=['Authentication'], response={
     200: UserTokenSchema,
-    401: ErrorSchema
+    422: ErrorSchema
 })
 def sign_in(request, data: SignInSchema):
     user = authenticate(username=data.email, password=data.password)
@@ -79,15 +76,11 @@ def sign_in(request, data: SignInSchema):
             )
         except Profile.DoesNotExist:
             pass
-    return router.api.create_response(
-        request,
-        ErrorSchema(error='wrong_credentials', code=ErrorCodes.SIGN_IN_WRONG_CREDENTIALS),
-        status=401
-    )
+    raise CredentialError()
 
 
 @router.post('/auth/sign-up', auth=[ApiKeyAuth()], tags=['Authentication'],
-             response={200: ProfileSchema, 400: ErrorSchema})
+             response={200: ProfileSchema, 422: ErrorSchema})
 def sign_up(request, data: SignUpSchema):
     try:
         with transaction.atomic():
@@ -104,6 +97,4 @@ def sign_up(request, data: SignUpSchema):
         return profile
 
     except DatabaseError:
-        return router.api.create_response(
-            request, ErrorSchema(error='error_while_creating_profile', code=ErrorCodes.USER_SIGN_UP_DATABASE_ERROR),
-            status=400)
+        raise OperationalError()

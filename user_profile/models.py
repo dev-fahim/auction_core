@@ -16,7 +16,7 @@ class Profile(VerificationModel, BaseModel):
     can_attend_auction: bool = models.BooleanField(default=False)
 
     @property
-    def can_create_product(self):
+    def can_operate_product(self):
         if self.user.is_superuser:
             return True
 

@@ -1,7 +1,8 @@
 import datetime
 import typing
 
-from ninja import Schema
+from django.utils import timezone
+from ninja import Schema, Field
 
 from core.api.schemas import BaseSchema, VerifiedBySchema, UserSchema, PaginatedObjectListSchema
 
@@ -21,6 +22,8 @@ class ProductSchema(VerifiedBySchema, BaseSchema):
     bid_starts: datetime.datetime
     bid_expires: datetime.datetime
 
+    is_updatable: bool = False
+
 
 class CreateProductSchema(Schema):
     category: str = None
@@ -28,9 +31,9 @@ class CreateProductSchema(Schema):
     name: str
     description: str = None
 
-    min_bid_price: int = 0
-    bid_starts: datetime.datetime
-    bid_expires: datetime.datetime
+    min_bid_price: int = Field(0, ge=0)
+    bid_starts: datetime.datetime = Field(None)
+    bid_expires: datetime.datetime = Field(None)
 
 
 class UpdateProductSchema(Schema):
@@ -39,9 +42,9 @@ class UpdateProductSchema(Schema):
     name: str
     description: str = None
 
-    min_bid_price: int = 0
-    bid_starts: datetime.datetime
-    bid_expires: datetime.datetime
+    min_bid_price: int = Field(0, ge=0)
+    bid_starts: datetime.datetime = Field(None)
+    bid_expires: datetime.datetime = Field(None)
 
 
 class ProductListSchema(PaginatedObjectListSchema):

@@ -1,0 +1,1 @@
+NINJA_DOCS_VIEW = 'redoc'
