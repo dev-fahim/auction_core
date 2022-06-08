@@ -13,6 +13,25 @@ class Profile(VerificationModel, BaseModel):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE, null=True, related_name='profile')
     user_type = models.CharField(max_length=100, choices=UserTypeEnum.choices)
 
+    can_attend_auction: bool = models.BooleanField(default=False)
+
+    @property
+    def can_create_product(self):
+        if self.user.is_superuser:
+            return True
+
+        if self.user_type == UserTypeEnum.BUYER:
+            return False
+
+        return self.is_verified
+
+    @property
+    def can_login(self):
+        if self.user.is_superuser:
+            return True
+
+        return self.is_active
+
 
 class Credit(BaseModel):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE, null=True, related_name='credit')

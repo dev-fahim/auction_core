@@ -12,30 +12,46 @@ from core.utils.validators import is_valid_email
 from user_profile.enums import UserTypeEnum
 from user_profile.models import Profile
 from user_profile.api.schemas import ProfileListSchema, ProfileSchema, CheckEmailSchema, SignUpSchema, SignInSchema, \
-    UserTokenSchema
+    UserTokenSchema, ProfileUpdateSchema
 
 router = Router(auth=[JWTAuth()])
 
 
-@router.get('/all', tags=['User Profiles'], response=ProfileListSchema)
-def get_profiles(request, page_number: int = 1):
-    profiles = Profile.objects.select_related('user', 'verified_by').order_by('-id')
-
-    return page_builder(profiles, 10, page_number)
-
-
-@router.get('/get/{guid}', tags=['User Profiles'], response={200: ProfileSchema, 404: ErrorSchema})
-def get_profile_object(request, guid: str):
-    try:
-        profile = Profile.objects.select_related('user', 'verified_by').get(guid__exact=guid)
-    except Profile.DoesNotExist:
-        return router.api.create_response(request,
-                                          data=ErrorSchema(error="profile_not_found", code=ErrorCodes.NOT_FOUND),
-                                          status=404)
-    return profile
+# @router.get('/all', tags=['User Profiles'], response=ProfileListSchema)
+# def get_profiles(request, page_number: int = 1):
+#     profiles = Profile.objects.select_related('user', 'verified_by').order_by('-id')
+#
+#     return page_builder(profiles, 10, page_number)
 
 
-@router.post('/auth/check-email', auth=[ApiKeyAuth()], tags=['Authentication'], response=MsgSchema)
+@router.get('/get', tags=['User Profiles'], response={200: ProfileSchema, 404: ErrorSchema})
+def get_profile_object(request):
+    return request.user.profile
+
+
+@router.put('/update', tags=['User Profiles'], response={200: ProfileSchema, 400: ErrorSchema, 404: ErrorSchema})
+def update_profile_object(request, data: ProfileUpdateSchema):
+    if is_valid_email(data.email):
+        try:
+            user = request.user
+            user.username = data.email
+            user.email = data.email
+            user.first_name = data.first_name
+            user.last_name = data.last_name
+            user.save()
+
+            return user.profile
+        except DatabaseError:
+            pass
+
+    return router.api.create_response(request,
+                                      data=ErrorSchema(
+                                          error="error_while_saving_user",
+                                          code=ErrorCodes.USER_UPDATE_ERROR),
+                                      status=404)
+
+
+@router.post('/auth/check-email', auth=[ApiKeyAuth(), JWTAuth()], tags=['Authentication'], response=MsgSchema)
 def check_email(request, data: CheckEmailSchema):
     if is_valid_email(data.email) is False:
         return MsgSchema(msg='email_is_not_valid')
@@ -47,7 +63,7 @@ def check_email(request, data: CheckEmailSchema):
     return MsgSchema(msg='email_is_unique')
 
 
-@router.post('/auth/sign_in', auth=[ApiKeyAuth()], tags=['Authentication'], response={
+@router.post('/auth/sign-in', auth=[ApiKeyAuth()], tags=['Authentication'], response={
     200: UserTokenSchema,
     401: ErrorSchema
 })
@@ -65,7 +81,7 @@ def sign_in(request, data: SignInSchema):
             pass
     return router.api.create_response(
         request,
-        ErrorSchema(error='wrong_credentials', code=302),
+        ErrorSchema(error='wrong_credentials', code=ErrorCodes.SIGN_IN_WRONG_CREDENTIALS),
         status=401
     )
 
@@ -88,4 +104,6 @@ def sign_up(request, data: SignUpSchema):
         return profile
 
     except DatabaseError:
-        return ErrorSchema(errno='error_while_creating_profile', code=301)
+        return router.api.create_response(
+            request, ErrorSchema(error='error_while_creating_profile', code=ErrorCodes.USER_SIGN_UP_DATABASE_ERROR),
+            status=400)

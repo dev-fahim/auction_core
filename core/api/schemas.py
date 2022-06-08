@@ -6,7 +6,13 @@ from ninja import Schema
 
 
 class ErrorCodes(int, enum.Enum):
-    NOT_FOUND = 101
+    NOT_FOUND = 1001
+
+    USER_UPDATE_ERROR = 2001
+
+    USER_SIGN_UP_DATABASE_ERROR = 3001
+
+    SIGN_IN_WRONG_CREDENTIALS = 4001
 
 
 class BaseSchema(Schema):

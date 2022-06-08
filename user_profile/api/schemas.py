@@ -6,7 +6,13 @@ from core.api.schemas import UserSchema, VerifiedBySchema, BaseSchema, Paginated
 from user_profile.enums import UserTypeEnum
 
 
-class ProfileSchema(VerifiedBySchema, BaseSchema):
+class UserProfileStatus(Schema):
+    can_create_product: bool = False
+    can_attend_auction: bool = False
+    can_login: bool = False
+
+
+class ProfileSchema(UserProfileStatus, VerifiedBySchema, BaseSchema):
     user: UserSchema
     user_type: UserTypeEnum
 
@@ -17,6 +23,12 @@ class SignUpSchema(Schema):
     last_name: str
     password: str
     is_buyer: bool = True
+
+
+class ProfileUpdateSchema(Schema):
+    email: str
+    first_name: str
+    last_name: str
 
 
 class CheckEmailSchema(Schema):
@@ -31,6 +43,11 @@ class SignInSchema(Schema):
 class UserTokenSchema(Schema):
     accessToken: str
     profile: ProfileSchema
+
+
+class VerifyUserProfile(Schema):
+    guid: str
+    is_verified: bool = False
 
 
 class ProfileListSchema(PaginatedObjectListSchema):
