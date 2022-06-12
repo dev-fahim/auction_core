@@ -6,3 +6,8 @@ class UserTypeEnum(TextChoices):
     ADMIN = 'ADMIN'
     BUYER = 'BUYER'
     SELLER = 'SELLER'
+
+
+class CreditTransactionTypeChoices(TextChoices):
+    IN = 'IN'
+    OUT = 'OUT'

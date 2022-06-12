@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 from core.models import BaseModel, VerificationModel
-from user_profile.enums import UserTypeEnum
+from user_profile.enums import UserTypeEnum, CreditTransactionTypeChoices
 
 
 class Profile(VerificationModel, BaseModel):
@@ -47,6 +47,9 @@ class CreditTransaction(BaseModel):
         (TYPE_OUT, TYPE_OUT),
     )
 
+    auction = models.ForeignKey('auction.Auction', on_delete=models.SET_NULL, null=True, blank=True)
+    bid_transaction = models.OneToOneField('auction.BidTransaction', on_delete=models.SET_NULL, null=True, blank=True)
+
     credit = models.ForeignKey('user_profile.Credit', on_delete=models.CASCADE, related_name='transactions')
     amount = models.PositiveIntegerField(default=0)
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    type = models.CharField(max_length=10, choices=CreditTransactionTypeChoices.choices)

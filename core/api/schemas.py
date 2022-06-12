@@ -58,11 +58,7 @@ class PaginatedObjectListSchema(Schema):
     total_pages: int
 
 
-class PaginationBuilderSchema(Schema):
-    count: int
-    next_page: int = None
-    previous_page: int = None
-    total_pages: int
+class PaginationBuilderSchema(PaginatedObjectListSchema, Schema):
     data: typing.List[typing.Any]
 
 

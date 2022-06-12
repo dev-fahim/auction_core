@@ -5,4 +5,6 @@ INSTALLED_APPS += [
     'user_profile',
     'product',
     'auction',
+
+    'baton.autodiscover',
 ]

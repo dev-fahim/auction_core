@@ -17,11 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 from api.routers import api
 
-from user_profile.views import all_profiles
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('baton/', include('baton.urls')),
     path('api/', api.urls),
-    path('all-profiles/', all_profiles),
     path('__debug__/', include('debug_toolbar.urls')),
 ]

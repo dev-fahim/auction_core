@@ -1,28 +1,22 @@
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.utils import DatabaseError
+from django.utils import timezone
 from ninja import Router
 
 from api.auth import JWTAuth, ApiKeyAuth
-from core.api.errors import OperationalError, UpdateError, CredentialError
+from core.api.errors import OperationalError, UpdateError, CredentialError, GetError
 from core.api.schemas import ErrorSchema, MsgSchema
 from core.utils.auth import generate_token
 from core.utils.builders import page_builder
 from core.utils.validators import is_valid_email
+from user_profile.api.schemas import ProfileSchema, CheckEmailSchema, SignUpSchema, SignInSchema, \
+    UserTokenSchema, ProfileUpdateSchema, CreditSchema, CreditTransactionListSchema
 from user_profile.enums import UserTypeEnum
-from user_profile.models import Profile
-from user_profile.api.schemas import ProfileListSchema, ProfileSchema, CheckEmailSchema, SignUpSchema, SignInSchema, \
-    UserTokenSchema, ProfileUpdateSchema
+from user_profile.models import Profile, Credit, CreditTransaction
 
 router = Router(auth=[JWTAuth()])
-
-
-# @router.get('/all', tags=['User Profiles'], response=ProfileListSchema)
-# def get_profiles(request, page_number: int = 1):
-#     profiles = Profile.objects.select_related('user', 'verified_by').order_by('-id')
-#
-#     return page_builder(profiles, 10, page_number)
 
 
 @router.get('/get', tags=['User Profiles'], response=ProfileSchema)
@@ -45,7 +39,7 @@ def update_profile_object(request, data: ProfileUpdateSchema):
         except DatabaseError:
             pass
 
-    raise UpdateError()
+    raise UpdateError("user")
 
 
 @router.post('/auth/check-email', auth=[ApiKeyAuth(), JWTAuth()], tags=['Authentication'], response=MsgSchema)
@@ -76,7 +70,7 @@ def sign_in(request, data: SignInSchema):
             )
         except Profile.DoesNotExist:
             pass
-    raise CredentialError()
+    raise CredentialError("user")
 
 
 @router.post('/auth/sign-up', auth=[ApiKeyAuth()], tags=['Authentication'],
@@ -91,10 +85,31 @@ def sign_up(request, data: SignUpSchema):
                 first_name=data.first_name,
                 last_name=data.last_name)
 
-            profile = Profile.objects.create(user_id=user.id,
-                                             user_type=UserTypeEnum.BUYER if data.is_buyer else UserTypeEnum.SELLER)
+            profile = Profile.objects.create(
+                user_id=user.id, user_type=UserTypeEnum.BUYER if data.is_buyer else UserTypeEnum.SELLER)
+
+            Credit.objects.create(
+                user_id=user.id,
+                balance=0,
+                expiry=timezone.now()
+            )
 
         return profile
 
     except DatabaseError:
-        raise OperationalError()
+        raise OperationalError("user_and_profile")
+
+
+@router.get('/credit', response={200: CreditSchema, 422: ErrorSchema}, tags=['Credits'])
+def get_credit(request):
+    try:
+        return Credit.objects.get(user_id=request.user.id, is_active=True)
+    except Credit.DoesNotExist:
+        raise GetError('credit')
+
+
+@router.get('/credit/transactions', response=CreditTransactionListSchema, tags=['Credits'])
+def get_credit_transactions(request, page_number: int = 1):
+    transactions = CreditTransaction.objects.select_related(
+        'credit').filter(credit__user_id=request.user.id)
+    return page_builder(transactions, 10, page_number)

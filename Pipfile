@@ -15,6 +15,7 @@ pydantic = "*"
 django-extensions = "*"
 django-debug-toolbar = "*"
 pyjwt = "*"
+django-baton = "*"
 
 [dev-packages]
 
