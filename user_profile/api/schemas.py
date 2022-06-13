@@ -72,3 +72,18 @@ class CreditTransactionSchema(BaseSchema):
 
 class CreditTransactionListSchema(PaginatedObjectListSchema):
     data: typing.List[CreditTransactionSchema]
+
+
+class RequestPasswordResetTokenSchema(Schema):
+    email: str = Field(regex=EMAIL_REGEX)
+
+
+class PasswordTokenIsValidSchema(Schema):
+    email: str = Field(regex=EMAIL_REGEX)
+    token: str
+
+
+class ResetPasswordSchema(Schema):
+    email: str = Field(regex=EMAIL_REGEX)
+    token: str
+    password: str

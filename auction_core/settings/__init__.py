@@ -5,6 +5,9 @@ from .project_apps_settings import *
 from .debug_settings import *
 from .api_settings import *
 from .admin_settings import *
+from .admin_settings import *
+from .email_settings import *
+from .frontend_settings import *
 
 if ENV == 'staging':
     from .environments.staging import *
