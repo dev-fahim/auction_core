@@ -1,4 +1,4 @@
-from api.api import api
+from core.api.api import api
 from user_profile.api.views import router as user_profile_router
 from product.api.views import router as product_router
 from auction.api.views import router as auction_router

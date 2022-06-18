@@ -1,18 +1,21 @@
 from django.utils import timezone
 from ninja import Router
 
-from api.auth import JWTAuth
+from core.api.auth import JWTAuth
 from core.api.errors import UpdateError, CreateError, GetError, NotPermittedError
 from core.api.schemas import ErrorSchema
+from core.helpers import func_debugger
 from core.utils.builders import page_builder
 from product.api.permissions import check_seller_limited
-from product.api.schemas import ProductListSchema, ProductSchema, CreateProductSchema, UpdateProductSchema
+from product.api.schemas import ProductListSchema, ProductSchema, CreateProductSchema, UpdateProductSchema, \
+    CategoryListSchema
 from product.models import Product, Category
 
 router = Router(auth=[JWTAuth()])
 
 
 @router.get('/all', response=ProductListSchema)
+@func_debugger
 def get_all_products(request, page_number: int = 1):
     user = request.user
 
@@ -22,6 +25,7 @@ def get_all_products(request, page_number: int = 1):
 
 
 @router.get('/get/{guid}', response={200: ProductSchema, 422: ErrorSchema})
+@func_debugger
 def get_product_object(request, guid):
     user = request.user
 
@@ -33,7 +37,14 @@ def get_product_object(request, guid):
     return product
 
 
+@router.get('/categories', response=CategoryListSchema)
+@func_debugger
+def get_all_categories(request):
+    return CategoryListSchema(data=list(Category.objects.filter(is_active=True)))
+
+
 @router.post('/create', response={200: ProductSchema, 422: ErrorSchema})
+@func_debugger
 def create_product(request, data: CreateProductSchema):
     check_seller_limited(request.user)
 
@@ -60,6 +71,7 @@ def create_product(request, data: CreateProductSchema):
 
 
 @router.put('/update/{guid}', response={200: ProductSchema, 422: ErrorSchema})
+@func_debugger
 def update_product(request, guid: str, data: UpdateProductSchema):
     check_seller_limited(request.user)
 

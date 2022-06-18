@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-from core.models import BaseModel, VerificationModel, CreatedByUserModel
+from core.models import BaseModel, VerificationModel, CreatedByUserModel, VerificationStatusTypes
 
 
 class Category(CreatedByUserModel, BaseModel):
@@ -33,4 +33,4 @@ class Product(VerificationModel, BaseModel):
 
     @property
     def is_updatable(self):
-        return self.is_verified is False
+        return self.status == VerificationStatusTypes.NOT_SUBMITTED or self.status == VerificationStatusTypes.REJECTED

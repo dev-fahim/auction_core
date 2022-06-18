@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from ninja import Router
 
-from api.auth import JWTAuth, ApiKeyAuth
+from core.api.auth import JWTAuth, ApiKeyAuth
 from core.api.errors import OperationalError, UpdateError, CredentialError, GetError, NotPermittedError
 from core.api.schemas import ErrorSchema, MsgSchema
 from core.utils.auth import generate_token
@@ -23,15 +23,19 @@ from user_profile.api.schemas import ProfileSchema, CheckEmailSchema, SignUpSche
 from user_profile.enums import UserTypeEnum
 from user_profile.models import Profile, Credit, CreditTransaction
 
+from core.helpers import func_debugger
+
 router = Router(auth=[JWTAuth()])
 
 
 @router.get('/get', tags=['User Profiles'], response=ProfileSchema)
+@func_debugger
 def get_profile_object(request):
     return request.user.profile
 
 
 @router.put('/update', tags=['User Profiles'], response={200: ProfileSchema, 422: ErrorSchema})
+@func_debugger
 def update_profile_object(request, data: ProfileUpdateSchema):
     if is_valid_email(data.email):
         try:
@@ -50,6 +54,7 @@ def update_profile_object(request, data: ProfileUpdateSchema):
 
 
 @router.post('/auth/check-email', auth=[ApiKeyAuth(), JWTAuth()], tags=['Authentication'], response=MsgSchema)
+@func_debugger
 def check_email(request, data: CheckEmailSchema):
     if is_valid_email(data.email) is False:
         return MsgSchema(msg='email_is_not_valid')
@@ -65,6 +70,7 @@ def check_email(request, data: CheckEmailSchema):
     200: UserTokenSchema,
     422: ErrorSchema
 })
+@func_debugger
 def sign_in(request, data: SignInSchema):
     user = authenticate(username=data.email, password=data.password)
 
@@ -82,6 +88,7 @@ def sign_in(request, data: SignInSchema):
 
 @router.post('/auth/sign-up', auth=[ApiKeyAuth()], tags=['Authentication'],
              response={200: ProfileSchema, 422: ErrorSchema})
+@func_debugger
 def sign_up(request, data: SignUpSchema):
     try:
         with transaction.atomic():
@@ -108,6 +115,7 @@ def sign_up(request, data: SignUpSchema):
 
 
 @router.get('/credit', response={200: CreditSchema, 422: ErrorSchema}, tags=['Credits'])
+@func_debugger
 def get_credit(request):
     try:
         return Credit.objects.get(user_id=request.user.id, is_active=True)
@@ -116,6 +124,7 @@ def get_credit(request):
 
 
 @router.get('/credit/transactions', response=CreditTransactionListSchema, tags=['Credits'])
+@func_debugger
 def get_credit_transactions(request, page_number: int = 1):
     transactions = CreditTransaction.objects.select_related(
         'credit').filter(credit__user_id=request.user.id)
@@ -126,6 +135,7 @@ def get_credit_transactions(request, page_number: int = 1):
     '/request-password-reset-token',
     response={200: MsgSchema, 422: ErrorSchema},
     tags=['Password Reset'], auth=[ApiKeyAuth()])
+@func_debugger
 def request_password_reset_token(request, data: RequestPasswordResetTokenSchema):
     try:
         user = User.objects.get(email__iexact=data.email)
@@ -152,6 +162,7 @@ def request_password_reset_token(request, data: RequestPasswordResetTokenSchema)
     '/password-reset-token-is-valid',
     response={200: MsgSchema, 422: ErrorSchema},
     tags=['Password Reset'], auth=[ApiKeyAuth()])
+@func_debugger
 def check_password_reset_token(request, data: PasswordTokenIsValidSchema):
     try:
         user = User.objects.get(email__iexact=data.email)
@@ -169,6 +180,7 @@ def check_password_reset_token(request, data: PasswordTokenIsValidSchema):
     '/reset-password',
     response={200: MsgSchema, 422: ErrorSchema},
     tags=['Password Reset'], auth=[ApiKeyAuth()])
+@func_debugger
 def reset_password(request, data: ResetPasswordSchema):
     try:
         user = User.objects.get(email__iexact=data.email)

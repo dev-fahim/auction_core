@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from api.routers import api
+from core.api.routers import api
 
 
 urlpatterns = [

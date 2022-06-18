@@ -17,6 +17,9 @@ django-debug-toolbar = "*"
 pyjwt = "*"
 django-baton = "*"
 django-cors-headers = "*"
+faker = "*"
+python-dotenv = "*"
+mimesis = "*"
 
 [dev-packages]
 

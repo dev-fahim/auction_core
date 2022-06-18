@@ -6,6 +6,13 @@ from model_utils.fields import MonitorField
 from core.utils.defaults import generate_guid
 
 
+class VerificationStatusTypes(models.TextChoices):
+    NOT_SUBMITTED = 'NOT_SUBMITTED'
+    IN_PROGRESS = 'IN_PROGRESS'
+    ACCEPTED = 'ACCEPTED'
+    REJECTED = 'REJECTED'
+
+
 class BaseModel(models.Model):
     guid = models.CharField(max_length=32, default=generate_guid, editable=False)
 
@@ -27,6 +34,9 @@ class VerificationModel(models.Model):
     verified_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True,
                                     related_name=verification_related_name)
     verification_timestamp = MonitorField(monitor='verified_by')
+
+    status = models.CharField(max_length=50, choices=VerificationStatusTypes.choices,
+                              default=VerificationStatusTypes.NOT_SUBMITTED)
 
     class Meta:
         abstract = True

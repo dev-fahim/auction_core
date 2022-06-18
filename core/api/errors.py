@@ -1,6 +1,6 @@
 import sys
 
-from api.api import api
+from core.api.api import api
 from core.api.schemas import ErrorCodes, ErrorSchema
 
 

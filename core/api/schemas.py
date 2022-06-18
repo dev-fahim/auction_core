@@ -4,6 +4,8 @@ import typing
 
 from ninja import Schema
 
+from core.models import VerificationStatusTypes
+
 
 class ErrorCodes(int, enum.Enum):
     GLOBAL_GET_ERROR = 1001
@@ -45,6 +47,7 @@ class VerifiedBySchema(Schema):
     is_verified: bool
     verified_by: UserSchema = None
     verification_timestamp: datetime.datetime = None
+    status: VerificationStatusTypes
 
 
 class CreatedBySchema(Schema):

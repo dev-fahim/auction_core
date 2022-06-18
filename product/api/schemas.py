@@ -47,3 +47,7 @@ class UpdateProductSchema(Schema):
 
 class ProductListSchema(PaginatedObjectListSchema):
     data: typing.List[ProductSchema]
+
+
+class CategoryListSchema(Schema):
+    data: typing.List[CategorySchema]

@@ -4,9 +4,10 @@ from django.db.models import QuerySet
 from django.utils import timezone
 
 from auction.models import Auction, BidTransaction
-from core.api.errors import GetError, OperationalError
+from core.api.errors import GetError, OperationalError, NotPermittedError
 from user_profile.enums import UserTypeEnum, CreditTransactionTypeChoices
 from user_profile.models import Credit, CreditTransaction
+from user_profile.queries import transfer_out
 
 
 def auction_queryset(user: User, is_running: bool = False) -> QuerySet[Auction]:
@@ -55,21 +56,10 @@ def will_won_bid_transaction(auction_id: int, amount: int) -> bool:
     return False
 
 
-def transfer(credit: Credit, amount: int) -> CreditTransaction | None:
-    now = timezone.now()
-
-    if credit.balance >= amount and credit.expiry >= now and credit.is_active:
-        credit_transaction = CreditTransaction.objects.create(
-            credit_id=credit.id,
-            amount=amount,
-            type=CreditTransactionTypeChoices.OUT
-        )
-        return credit_transaction
-    else:
-        raise OperationalError("credit_not_satisfied")
-
-
 def create_bid_transaction(user: User, auction_id: int, amount: int) -> BidTransaction:
+    if user.profile.user_type == UserTypeEnum.SELLER:
+        raise NotPermittedError("user")
+
     try:
         auction = Auction.objects.get(id=auction_id)
     except Auction.DoesNotExist:
@@ -85,7 +75,7 @@ def create_bid_transaction(user: User, auction_id: int, amount: int) -> BidTrans
             except Credit.DoesNotExist:
                 raise GetError("credit_not_issued")
 
-            credit_transaction = transfer(credit, amount)
+            credit_transaction = transfer_out(credit, amount)
 
             bid_transaction = BidTransaction.objects.create(
                 user_id=user.id,
