@@ -61,7 +61,8 @@ def create_product(request, data: CreateProductSchema):
                 description=data.description,
                 min_bid_price=data.min_bid_price,
                 bid_starts=data.bid_starts,
-                bid_expires=data.bid_expires
+                bid_expires=data.bid_expires,
+                is_active=True
             )
             return product
         except Category.DoesNotExist:
@@ -96,6 +97,7 @@ def update_product(request, guid: str, data: UpdateProductSchema):
                 setattr(product, key, value)
             product.category = category
             product.updated = timezone.now()
+            product.save()
             return product
         except Category.DoesNotExist:
             raise GetError("category")
