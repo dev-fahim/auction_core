@@ -51,3 +51,7 @@ class ProductListSchema(PaginatedObjectListSchema):
 
 class CategoryListSchema(Schema):
     data: typing.List[CategorySchema]
+
+
+class SubmitForProposalSchema(Schema):
+    guid: str

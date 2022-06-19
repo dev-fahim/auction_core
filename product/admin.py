@@ -49,4 +49,4 @@ class ProductAdmin(admin.ModelAdmin):
         'bid_starts',
         'bid_expires',
     )
-    search_fields = ('name',)
+    search_fields = ('name', 'guid')

@@ -2,13 +2,14 @@ from django.utils import timezone
 from ninja import Router
 
 from core.api.auth import JWTAuth
-from core.api.errors import UpdateError, CreateError, GetError, NotPermittedError
+from core.api.errors import UpdateError, CreateError, GetError
 from core.api.schemas import ErrorSchema
 from core.helpers import func_debugger
+from core.models import VerificationStatusTypes
 from core.utils.builders import page_builder
-from product.api.permissions import check_seller_limited
+from product.api.permissions import check_seller_limited, check_product_is_locked
 from product.api.schemas import ProductListSchema, ProductSchema, CreateProductSchema, UpdateProductSchema, \
-    CategoryListSchema
+    CategoryListSchema, SubmitForProposalSchema
 from product.models import Product, Category
 
 router = Router(auth=[JWTAuth()])
@@ -83,8 +84,7 @@ def update_product(request, guid: str, data: UpdateProductSchema):
     except Product.DoesNotExist:
         raise GetError("product")
 
-    if product.is_updatable is False:
-        raise NotPermittedError("product")
+    check_product_is_locked(product)
 
     now = timezone.now()
 
@@ -116,6 +116,27 @@ def delete_product(request, guid: str):
     except Product.DoesNotExist:
         raise GetError("product")
 
+    check_product_is_locked(product)
+
     product.delete()
+
+    return product
+
+
+@router.post('/submit-for-proposal', response={200: ProductSchema, 422: ErrorSchema})
+def product_submit_for_proposal(request, data: SubmitForProposalSchema):
+    check_seller_limited(request.user)
+
+    user = request.user
+
+    try:
+        product = Product.objects.get(guid__exact=data.guid, user_id=user.id)
+    except Product.DoesNotExist:
+        raise GetError("product")
+
+    check_product_is_locked(product)
+
+    product.status = VerificationStatusTypes.IN_PROGRESS
+    product.save()
 
     return product
